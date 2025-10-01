@@ -759,7 +759,7 @@ async function setupBalancoPatrimonial() {
             }
         });
 
-        // 3. Constrói a estrutura hierárquica (exatamente como na versão anterior)
+        // 3. Constrói a estrutura hierárquica 
         const estrutura = {};
         saldos.forEach(conta => {
             if (conta.saldoFinal === 0) return;
@@ -770,9 +770,9 @@ async function setupBalancoPatrimonial() {
             estrutura[grupo][sub_grupo][elemento].push(conta);
         });
 
-        // 4. A lógica de renderização hierárquica permanece a mesma
+        // 4. A lógica de renderização hierárquica 
         const renderizarSecao = (gruposParaRenderizar, tituloSecao) => {
-            // ... (A função renderizarSecao da versão anterior pode ser colada aqui sem modificações)
+           
             let html = `<div class="bp-section-title">${tituloSecao}</div>`;
             let totalSecao = 0;
             html += '<table class="bp-table">';
@@ -796,7 +796,7 @@ async function setupBalancoPatrimonial() {
                 }
                 totalSecao += totalGrupo;
                 html += `<tr class="bp-subtotal-row">
-                            <td>Total ${nomeGrupo}</td>
+                            <td class="total-tipo">Total ${nomeGrupo}</td>
                             <td>${totalGrupo.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
                          </tr>`;
             }

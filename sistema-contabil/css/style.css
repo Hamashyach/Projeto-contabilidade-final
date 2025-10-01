@@ -1,38 +1,55 @@
+
+:root {
+    --c-primary-dark: #212a52; 
+    --c-background: #f4f6f8; 
+    --c-text-main: #34495e; 
+    --c-text-secondary: #7f8c8d; 
+    --c-accent: #0ca1e6; 
+    --c-success: #1abc9c; 
+    --c-success-hover: #16a085;
+    --c-danger: #e74c3c; 
+    --c-danger-hover: #c0392b;
+    --c-warning: #16a085; 
+    --c-warning-hover: #13856e;
+    --c-border: #dce1e6; 
+    --c-input-bg: #ffffff; 
+}
+
 /* Estilo geral */
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f4f7f6;
-    color: #333;
+    background-color: var(--c-background);
+    color: var(--c-text-main);
 }
 
 /* Cabeçalho superior */
 .header {
-    background-color: #ffffff;
-    padding: 0 40px;
+    padding-top: 30px;
+    background-color: var(--c-primary-dark);
     display: flex;
-    justify-content: space-between; /* Alinha logo à esquerda e menu à direita */
+    justify-content: center;
     align-items: center;
-    border-bottom: 1px solid #e0e0e0;
-    height: 70px;
+    border-bottom: 1px solid var(--c-primary-light);
+    height: 180px;
+    flex-direction: column;
 }
 
-/* Container da logo e título */
 .logo-container {
     display: flex;
     align-items: center;
 }
 
 .logo {
-    height: 40px; /* Ajuste a altura da sua logo */
-    margin-right: 15px;
+    height: 100px;
 }
 
 .header h1 {
     margin: 0;
     font-size: 1.5em;
-    color: #2c3e50;
+    color: white;
+    margin-left: 15px;
 }
 
 /* Navegação no topo */
@@ -45,17 +62,32 @@ body {
 
 .top-nav ul li a {
     display: block;
-    color: #34495e;
+    color: #b3cbe2;
     text-decoration: none;
-    padding: 25px 15px; /* Padding vertical para centralizar o texto */
+    padding: 25px 15px;
     font-weight: 500;
     transition: color 0.3s, border-bottom 0.3s;
-    border-bottom: 3px solid transparent; /* Borda invisível para transição suave */
 }
 
 .top-nav ul li a:hover {
-    color: #1abc9c;
-    border-bottom: 3px solid #1abc9c;
+    color: var(--c-accent);
+    border-bottom: 2px solid var(--c-accent);
+    padding-bottom: 10px;
+}
+
+#btn-cancelar-novo-lancamento{
+    background-color: var(--c-danger);
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: 600;
+    transition: background-color 0.3s, transform 0.1s;  
+}
+#btn-cancelar-novo-lancamento:hover {
+    background-color: var(--c-danger-hover);
 }
 
 /* Conteúdo principal */
@@ -64,224 +96,251 @@ body {
 }
 
 .content h2 {
-    color: #2c3e50;
+    color: var(--c-text-main);
+    margin-bottom: 20px;
 }
 
 .content p {
-    color: #34495e;
+    color: var(--c-text-main);
     font-size: 1.1em;
+    line-height: 1.6;
 }
-/* Estilos do Formulário */
-.form-container {
+
+/* --- ESTILOS MODERNIZADOS DE FORMULÁRIO (CARDS E INPUTS) --- */
+
+/* Contêineres de Formulário (Estilo "Card") */
+.form-container,
+#form-container-nova-conta,
+#form-container-novo-lancamento {
+    background-color: var(--c-input-bg);
+    border: 1px solid var(--c-border);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    padding: 25px;
     max-width: 600px;
     margin-top: 20px;
 }
-.form-group {
-    margin-bottom: 15px;
-}
+
+
+
 .form-group label {
     display: block;
-    margin-bottom: 5px;
-    font-weight: 500;
-    color: #34495e;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--c-text-main);
+    font-size: 0.95em;
 }
-.form-group input {
+
+/* Estilos para Inputs e Selects */
+.form-group input,
+.form-group select,
+#form-container-nova-conta .form-group select,
+#form-container-novo-lancamento .form-group input[type="date"],
+#form-container-novo-lancamento .form-group input[type="number"],
+#company-select {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box; /* Garante que o padding não afete a largura total */
+    padding: 12px;
+    border: 1px solid var(--c-border);
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-size: 1em;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    background-color: var(--c-input-bg);
 }
+
+.form-group input:focus,
+.form-group select:focus,
+#company-select:focus {
+    border-color: var(--c-accent);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(12, 161, 230, 0.15);
+}
+
+/* Estilos para Botões Principais */
 .form-actions {
-    margin-top: 20px;
+    margin-top: 25px;
 }
+
 .btn-submit {
-    background-color: #1abc9c;
+    background-color: var(--c-success);
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: 600;
+    transition: background-color 0.3s, transform 0.1s;
+}
+.btn-submit:hover {
+    background-color: var(--c-success-hover);
+}
+.btn-submit:active {
+    transform: scale(0.98);
+}
+
+/* Botão específico para "Gerar Razão" (Usa cor de acento) */
+.btn-razao {
+    background-color: var(--c-accent);
     color: white;
     padding: 12px 20px;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
     font-size: 1em;
-}
-.btn-submit:hover {
-    background-color: #16a085;
+    font-weight: 600;
+    transition: background-color 0.3s;
 }
 
-/* Estilos para a barra de seleção de empresa */
+.btn-razao:hover {
+    background-color: #098ac0;
+}
+
+
+/* --- BARRA DE SELEÇÃO DE EMPRESA E FILTROS --- */
+
 #company-selector-bar {
-    background-color: #ecf0f1;
-    padding: 10px 40px;
+    background-color: var(--c-primary-light);
+    padding: 15px 40px;
     display: flex;
     align-items: center;
     border-bottom: 1px solid #bdc3c7;
 }
 
 #company-selector-bar label {
-    margin-right: 10px;
-    font-weight: 500;
-    color: #2c3e50;
+    margin-right: 15px;
+    font-weight: 600;
+    color: var(--c-text-main);
 }
 
-#company-select {
-    min-width: 250px;
-    padding: 8px;
-    font-size: 1em;
-    border: 1px solid #bdc3c7;
-    border-radius: 4px;
-    background-color: white;
-}
 
-/* Estilos da Página de Setup */
-.header-container {
+.filtro-container {
+    max-width: none;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: -10px;
+    gap: 20px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    background-color: var(--c-input-bg);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    margin-bottom: 20px;
+    max-width: 600px; 
 }
+
+/* --- ESTILOS DE TABELAS GERAIS (SETUP, LIVRO DIÁRIO, BALANCETE) --- */
 
 .table-container {
     margin-top: 20px;
-    overflow-x: auto; /* Para rolagem em telas pequenas */
+    overflow-x: auto;
 }
 
-#tabela-plano-de-contas {
+#tabela-plano-de-contas,
+#tabela-livro-diario,
+#tabela-balancete {
     width: 100%;
     border-collapse: collapse;
-    background-color: #fff;
+    background-color: var(--c-input-bg);
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 #tabela-plano-de-contas th,
-#tabela-plano-de-contas td {
-    border: 1px solid #ddd;
-    padding: 10px;
-    text-align: left;
-}
-
-#tabela-plano-de-contas th {
-    background-color: #f2f2f2;
-    font-weight: 500;
-}
-
-#form-container-nova-conta {
-    margin-bottom: 20px;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-}
-
-#form-container-nova-conta .form-group select {
-     width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-#form-container-nova-conta button {
-    padding: 10px 15px;
-    margin-right: 10px;
-}
-/* Estilos para a Página do Livro Diário */
-
-#form-container-novo-lancamento {
-    margin-bottom: 20px;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-}
-
-
-#form-container-novo-lancamento .form-group select,
-#form-container-novo-lancamento .form-group input[type="date"],
-#form-container-novo-lancamento .form-group input[type="number"] {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box; 
-}
-
-#tabela-livro-diario {
-    width: 100%;
-    border-collapse: collapse;
-    background-color: #fff;
-    margin-top: 20px;
-}
-
+#tabela-plano-de-contas td,
 #tabela-livro-diario th,
-#tabela-livro-diario td {
-    border: 1px solid #ddd;
-    padding: 10px;
+#tabela-livro-diario td,
+#tabela-balancete th,
+#tabela-balancete td {
+    border: 1px solid var(--c-border);
+    padding: 12px 10px;
     text-align: left;
+    font-size: 0.95em;
 }
 
-#tabela-livro-diario th {
-    background-color: #f2f2f2;
-    font-weight: 500;
+#tabela-plano-de-contas th,
+#tabela-livro-diario th,
+#tabela-balancete th {
+    background-color: #eef1f4;
+    font-weight: 600;
+    color: var(--c-text-main);
 }
 
 
 #tabela-livro-diario th:nth-child(4),
 #tabela-livro-diario td:nth-child(4),
 #tabela-livro-diario th:nth-child(5),
-#tabela-livro-diario td:nth-child(5) {
-    text-align: right;
+#tabela-livro-diario td:nth-child(5),
+#tabela-balancete td:nth-child(3),
+#tabela-balancete th:nth-child(3),
+#tabela-balancete td:nth-child(4),
+#tabela-balancete th:nth-child(4),
+#tabela-balancete td:nth-child(5),
+#tabela-balancete th:nth-child(5) {
+    font-family: 'Roboto Mono', monospace;
+}
+
+/*Débito/Crédito no Livro Diário */
+
+#tabela-livro-diario td:nth-child(5) { /* Crédito */
+    color: var(--c-success-hover);
+}
+
+#tabela-livro-diario td:nth-child(4) { /* Débito */
+    color: var(--c-danger-hover);
 }
 
 
-#tabela-livro-diario td:nth-child(5) {
-    color: #27ae60;
-}
-
-
-#tabela-livro-diario td:nth-child(4) {
-    color: #c0392b;
-}
 .action-buttons {
     display: flex;
-    gap: 5px; 
+    gap: 5px;
 }
 
 .btn-action {
-    padding: 5px 8px;
+    padding: 8px 12px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 0.8em;
+    font-size: 0.85em;
     color: white;
+    font-weight: 500;
+    transition: background-color 0.3s;
 }
 
 .btn-edit {
-    background-color: #f39c12; 
+    background-color: var(--c-warning);
 }
 .btn-edit:hover {
-    background-color: #e67e22;
+    background-color: var(--c-warning-hover);
 }
 
 .btn-delete {
-    background-color: #e74c3c; 
+    background-color: var(--c-danger);
 }
 .btn-delete:hover {
-    background-color: #c0392b;
+    background-color: var(--c-danger-hover);
 }
 
-/* Estilos para a Página do Livro Razão */
+
+/* --- ESTILOS DO LIVRO RAZÃO (REFINADO) --- */
+
 #razao-container {
     margin-top: 20px;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 20px;
+    background-color: var(--c-input-bg);
+    border: 1px solid var(--c-border);
+    border-radius: 8px;
+    padding: 25px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 #razao-titulo-conta {
     text-align: center;
-    color: #2c3e50;
-    border-bottom: 2px solid #34495e;
+    color: var(--c-primary-dark);
+    border-bottom: 3px solid var(--c-primary-dark);
     padding-bottom: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
+    font-size: 1.6em;
+    font-weight: 700;
 }
 
 .razao-layout {
@@ -296,166 +355,165 @@ body {
 
 .razao-coluna h4 {
     text-align: center;
-    margin-bottom: 10px;
-    color: #7f8c8d;
+    margin: 0;
+    padding: 10px;
+    background-color: #eef1f4;
+    border: 1px solid var(--c-border);
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+    color: var(--c-primary-dark);
+    font-size: 1.1em;
 }
 
 .razao-table {
     width: 100%;
     border-collapse: collapse;
+    background-color: white;
+    border: 1px solid var(--c-border);
+    border-top: none;
 }
 
 .razao-table th, .razao-table td {
-    border: 1px solid #ecf0f1;
-    padding: 8px;
-    font-size: 0.9em;
+    padding: 8px 10px;
+    border-bottom: 1px dotted var(--c-border);
+    font-size: 0.95em;
 }
 
 .razao-table th {
     background-color: #f9f9f9;
+    font-weight: 600;
 }
+
 .razao-table td:last-child {
     text-align: right;
-    font-family: monospace;
+    font-family: 'Roboto Mono', monospace;
+    font-weight: 600;
+    color: var(--c-primary-dark);
+}
+
+
+.razao-coluna.debito .razao-table td:last-child {
+    color: var(--c-danger-hover);
+}
+
+.razao-coluna.credito .razao-table td:last-child {
+    color: var(--c-success-hover);
 }
 
 .razao-footer {
     margin-top: 20px;
     padding-top: 15px;
-    border-top: 2px solid #34495e;
+    border-top: 3px double var(--c-primary-dark);
     display: flex;
     justify-content: space-between;
     font-weight: bold;
+    font-size: 1.2em;
+    color: var(--c-primary-dark);
+    background-color: #eef1f4;
+    padding: 15px;
+    border-radius: 0 0 8px 8px;
+    margin: 0;
 }
 
-/* Estilos para a Página do Balancete */
-#tabela-balancete {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    font-size: 0.9em;
-}
+/* --- ESTILOS DO BALANÇO PATRIMONIAL (HIERÁRQUICO) --- */
 
-#tabela-balancete th,
-#tabela-balancete td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-}
-
-#tabela-balancete th {
-    background-color: #f2f2f2;
-}
-
-
-#tabela-balancete td:nth-child(3),
-#tabela-balancete th:nth-child(3),
-#tabela-balancete td:nth-child(4),
-#tabela-balancete th:nth-child(4),
-#tabela-balancete td:nth-child(5),
-#tabela-balancete th:nth-child(5) {
-    text-align: right;
-    font-family: monospace;
-}
-
-
-#tabela-balancete tfoot tr {
-    background-color: #34495e;
-    color: white;
-    font-weight: bold;
-}
-
-#tabela-balancete th[rowspan="2"] {
-    vertical-align: middle;
-}
-
-/* Estilos para o Balanço Patrimonial (Versão Hierárquica) */
 .report-container {
     margin-top: 20px;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 20px;
-    font-size: 0.9em;
+    background-color: var(--c-input-bg);
+    border: 1px solid var(--c-border);
+    border-radius: 8px;
+    padding: 25px;
+    font-size: 0.95em;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .bp-section-title {
-    font-size: 1.2em;
-    font-weight: bold;
-    color: #2c3e50;
-    margin-top: 20px;
-    margin-bottom: 10px;
-    border-bottom: 2px solid #34495e;
-    padding-bottom: 5px;
+    font-size: 1.4em;
+    font-weight: 700;
+    color: var(--c-primary-dark);
+    margin-top: 30px;
+    margin-bottom: 15px;
+    border-bottom: 3px solid var(--c-primary-dark);
+    padding-bottom: 8px;
 }
 
 .bp-table {
     width: 100%;
     border-collapse: collapse;
-}
-
-.bp-table td {
-    padding: 6px 8px;
-    border-bottom: 1px solid #f0f0f0;
-}
-
-/* Linha de conta normal */
-.bp-account-row td:first-child {
-    padding-left: 30px; /* Indentação para contas */
-}
-.bp-account-row td:last-child {
-    text-align: right;
-    font-family: monospace;
-}
-
-/* Título de Grupo/Subgrupo */
-.bp-group-header td {
-    font-weight: bold;
-    color: #34495e;
-    padding-top: 15px;
-}
-
-/* Linha de Subtotal */
-.bp-subtotal-row td {
-    font-weight: bold;
-    text-align: right;
-    border-top: 1px solid #bdc3c7;
-    padding-top: 8px;
-}
-
-/* Linha de Total Geral do Grupo (ex: Total do Ativo) */
-.bp-grand-total-row td {
-    font-weight: bold;
-    font-size: 1.1em;
-    background-color: #ecf0f1;
-    text-align: right;
-    padding: 10px 8px;
-    border-top: 2px solid #34495e;
-}
-
-.filtro-container {
-    display: flex;
-    gap: 20px;
-    align-items: flex-end;
-    flex-wrap: wrap;
-    background-color: #f9f9f9;
-    padding: 20px;
-    border-radius: 5px;
     margin-bottom: 20px;
 }
 
+.bp-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+
+.bp-account-row td:first-child {
+    padding-left: 45px;
+}
+.bp-account-row td:last-child {
+    text-align: right;
+    font-family: 'Roboto Mono', monospace;
+    font-weight: 500;
+}
+
+
+.bp-group-header td {
+    font-weight: bold;
+    color: var(--c-text-main);
+    padding-top: 20px;
+    font-size: 1.1em;
+    padding-left: 15px !important;
+}
+
+.bp-subtotal-row td {
+    font-weight: 600;
+    text-align: right;
+    border-top: 1px solid var(--c-text-main);
+    padding-top: 10px;
+    font-style: italic;
+    font-size: 1em;
+}
+
+
+.bp-grand-total-row td {
+    font-weight: 700;
+    font-size: 1.2em;
+    background-color: #eef1f4;
+    color: var(--c-primary-dark);
+    text-align: right;
+    padding: 12px 10px;
+    border-top: 3px solid var(--c-primary-dark);
+}
+
+
+.bp-grand-total-row .total-tipo {
+    font-weight: 700;
+    font-size: 1.2em;
+    background-color: #eef1f4;
+    color: var(--c-primary-dark);
+    padding: 12px 10px;
+    border-top: 3px solid var(--c-primary-dark);
+    text-align: left;
+}
+
+/* --- RODAPÉ --- */
 .main-footer {
-    width: 100%;
+    position: fixed; 
+    bottom: 0;     
+    left: 0;        
+    width: 100%;    
     padding: 24px 0;
-    margin-top: 40px; 
-    background-color: var(--c-background);
+    background-color: var(--c-primary-dark);
     border-top: 1px solid var(--c-border);
     text-align: center;
+    z-index: 1000; 
 }
 
 .main-footer p {
     margin: 0;
-    color: var(--c-text-secondary);
+    color: white;
     font-size: 0.9em;
     font-weight: 500;
 }
