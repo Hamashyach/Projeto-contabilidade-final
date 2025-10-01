@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Atualizador de Empresas Antigas</title>
+</head>
+<body>
+    <h1>Atualizador do Plano de Contas para Empresas Existentes</h1>
+    <p>Este script irá verificar todas as empresas cadastradas e adicionar o plano de contas padrão àquelas que ainda não o possuem.</p>
+    <button id="start-update">Iniciar Atualização</button>
+    <div id="status" style="font-family: monospace; white-space: pre; background-color: #f4f4f4; padding: 10px; margin-top: 10px;">Pressione o botão para começar...</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // --- COLOQUE SUAS CREDENCIAIS AQUI ---
+         const supabaseUrl = 'https://kubvqfjfgvwuqrtbdlvj.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1YnZxZmpmZ3Z3dXFydGJkbHZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkwMjE0NDgsImV4cCI6MjA3NDU5NzQ0OH0.aXAnxDJr0MfipEsIg1tnRDb6DCxFbDOVkwIT0rjXu50';
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+        const statusDiv = document.getElementById('status');
+        
+        // Esta função é a mesma que já temos no nosso script.js principal
+        async function popularPlanoDeContas(empresaId, empresaNome) {
+            statusDiv.innerHTML += `\n-> Populando contas para a empresa: ${empresaNome} (ID: ${empresaId})...`;
+            
+            const { data: contasPadrao, error: errorBusca } = await supabaseClient
+                .from('plano_de_contas_padrao')
+                .select('*');
+
+            if (errorBusca) {
+                statusDiv.innerHTML += `\n   ERRO ao buscar contas padrão: ${errorBusca.message}`;
+                return false;
+            }
+
+            const novasContas = contasPadrao.map(conta => ({
+                grupo: conta.grupo,
+                sub_grupo: conta.sub_grupo,
+                elemento: conta.elemento,
+                codigo: conta.codigo,
+                nome: conta.nome,
+                classificacao: conta.classificacao,
+                natureza: conta.natureza,
+                empresa_id: empresaId
+            }));
+
+            const { error: errorInsert } = await supabaseClient
+                .from('plano_de_contas')
+                .insert(novasContas);
+
+            if (errorInsert) {
+                statusDiv.innerHTML += `\n   ERRO ao inserir plano de contas: ${errorInsert.message}`;
+                return false;
+            }
+            
+            statusDiv.innerHTML += `\n   SUCESSO! Plano de contas importado.`;
+            return true;
+        }
+
+        async function iniciarAtualizacao() {
+            statusDiv.innerHTML = 'Iniciando atualização...\nBuscando todas as empresas cadastradas...';
+            
+            // 1. Pega a lista de todas as empresas
+            const { data: empresas, error: erroEmpresas } = await supabaseClient.from('empresas').select('id, nome_fantasia');
+            if (erroEmpresas) {
+                statusDiv.innerHTML += `\nERRO ao buscar empresas: ${erroEmpresas.message}`;
+                return;
+            }
+            statusDiv.innerHTML += `\nEncontradas ${empresas.length} empresas. Verificando cada uma...`;
+
+            // 2. Passa por cada empresa
+            for (const empresa of empresas) {
+                statusDiv.innerHTML += `\n\nVerificando empresa: "${empresa.nome_fantasia}"...`;
+                
+                // 3. Verifica se a empresa JÁ TEM contas cadastradas
+                const { data, error, count } = await supabaseClient
+                    .from('plano_de_contas')
+                    .select('id', { count: 'exact', head: true }) // head:true faz a consulta ser muito rápida
+                    .eq('empresa_id', empresa.id);
+
+                if (error) {
+                    statusDiv.innerHTML += `\n   ERRO ao verificar contas existentes: ${error.message}`;
+                    continue; // Pula para a próxima empresa
+                }
+
+                // 4. Se a contagem de contas for 0, então popula
+                if (count === 0) {
+                    statusDiv.innerHTML += `\n   Esta empresa não possui plano de contas. Iniciando cópia...`;
+                    await popularPlanoDeContas(empresa.id, empresa.nome_fantasia);
+                } else {
+                    statusDiv.innerHTML += `\n   Esta empresa já possui ${count} contas. Nenhuma ação necessária.`;
+                }
+            }
+            
+            statusDiv.innerHTML += '\n\n--- ATUALIZAÇÃO CONCLUÍDA ---';
+        }
+
+        document.getElementById('start-update').addEventListener('click', iniciarAtualizacao);
+    </script>
+</body>
+</html>

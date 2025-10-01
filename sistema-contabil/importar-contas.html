@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Importação de Contas (Versão Corrigida)</title>
+</head>
+<body>
+    <h1>Importador do Plano de Contas Padrão</h1>
+    <p>Abra o console (F12) para ver o progresso.</p>
+    <button id="start-import">Iniciar Importação Manual</button>
+    <div id="status"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // --- COLOQUE SUAS CREDENCIAIS AQUI ---
+        const supabaseUrl = 'https://kubvqfjfgvwuqrtbdlvj.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1YnZxZmpmZ3Z3dXFydGJkbHZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkwMjE0NDgsImV4cCI6MjA3NDU5NzQ0OH0.aXAnxDJr0MfipEsIg1tnRDb6DCxFbDOVkwIT0rjXu50';
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Dados extraídos e corrigidos da sua planilha "setup.csv"
+        // Dentro de importar-contas.html, substitua o array 'contasPadrao'
+
+const contasPadrao = [
+    { grupo: '1', sub_grupo: '1', elemento: '1', codigo: '1.1.1', nome: 'Caixa', classificacao: 'Ativo Circulante', natureza: 1 },
+    { grupo: '1', sub_grupo: '2', elemento: '1', codigo: '1.2.1', nome: 'Banco', classificacao: 'Ativo Circulante', natureza: 1 },
+    { grupo: '1', sub_grupo: '3', elemento: '1', codigo: '1.3.1', nome: 'Contas a Receber', classificacao: 'Ativo Circulante', natureza: 1 },
+    { grupo: '1', sub_grupo: '4', elemento: '1', codigo: '1.4.1', nome: 'Mercadorias', classificacao: 'Ativo Circulante', natureza: 1 },
+    { grupo: '1', sub_grupo: '5', elemento: '1', codigo: '1.5.1', nome: 'Despesas Antecipadas', classificacao: 'Ativo Circulante', natureza: 1 },
+    { grupo: '1', sub_grupo: '6', elemento: '1', codigo: '1.6.1', nome: 'Impostos a Recuperar', classificacao: 'Ativo Circulante', natureza: 1 },
+    { grupo: '1', sub_grupo: '6', elemento: '2', codigo: '1.6.2', nome: 'Conta teste', classificacao: 'Ativo Circulante', natureza: 1 },
+    { grupo: '2', sub_grupo: '1', elemento: '1', codigo: '2.1.1', nome: 'Contas a Receber a Longo Prazo', classificacao: 'Ativo Não Circulante', natureza: 1 },
+    { grupo: '2', sub_grupo: '2', elemento: '1', codigo: '2.2.1', nome: 'Terrenos - Investimento', classificacao: 'Ativo Não Circulante', natureza: 1 },
+    { grupo: '2', sub_grupo: '2', elemento: '2', codigo: '2.2.2', nome: 'Obra de Arte', classificacao: 'Ativo Não Circulante', natureza: 1 },
+    { grupo: '2', sub_grupo: '2', elemento: '4', codigo: '2.2.4', nome: 'Móveis e Utensílios', classificacao: 'Ativo Não Circulante', natureza: 1 },
+    { grupo: '2', sub_grupo: '2', elemento: '5', codigo: '2.2.5', nome: 'Banco investimento', classificacao: 'Ativo Não Circulante', natureza: 1 },
+    { grupo: '2', sub_grupo: '3', elemento: '1', codigo: '2.3.1', nome: 'Máquinas e Equipamentos', classificacao: 'Ativo Não Circulante', natureza: 1 },
+    { grupo: '2', sub_grupo: '3', elemento: '2', codigo: '2.3.2', nome: 'Imóveis', classificacao: 'Ativo Não Circulante', natureza: 1 },
+    { grupo: '2', sub_grupo: '3', elemento: '3', codigo: '2.3.3', nome: 'Veículos', classificacao: 'Ativo Não Circulante', natureza: 1 },
+    { grupo: '2', sub_grupo: '3', elemento: '4', codigo: '2.3.4', nome: 'Terrenos - Imobilizado', classificacao: 'Ativo Não Circulante', natureza: 1 },
+    { grupo: '2', sub_grupo: '3', elemento: '5', codigo: '2.3.5', nome: 'Depreciação Acumulada', classificacao: 'Ativo Não Circulante', natureza: -1 },
+    { grupo: '2', sub_grupo: '4', elemento: '1', codigo: '2.4.1', nome: 'Marcas e Patentes', classificacao: 'Ativo Não Circulante', natureza: 1 },
+    { grupo: '2', sub_grupo: '4', elemento: '2', codigo: '2.4.2', nome: 'Software', classificacao: 'Ativo Não Circulante', natureza: 1 },
+    { grupo: '3', sub_grupo: '1', elemento: '1', codigo: '3.1.1', nome: 'Contas a Pagar', classificacao: 'Passivo Circulante', natureza: -1 },
+    { grupo: '3', sub_grupo: '2', elemento: '1', codigo: '3.2.1', nome: 'Fornecedores', classificacao: 'Passivo Circulante', natureza: -1 },
+    { grupo: '3', sub_grupo: '3', elemento: '1', codigo: '3.3.1', nome: 'Impostos a Pagar', classificacao: 'Passivo Circulante', natureza: -1 },
+    { grupo: '3', sub_grupo: '4', elemento: '1', codigo: '3.4.1', nome: 'Salários a Pagar', classificacao: 'Passivo Circulante', natureza: -1 },
+    { grupo: '3', sub_grupo: '5', elemento: '1', codigo: '3.5.1', nome: 'Receitas Antecipadas', classificacao: 'Passivo Circulante', natureza: -1 },
+    { grupo: '3', sub_grupo: '6', elemento: '1', codigo: '3.6.1', nome: 'Dividendos a Pagar', classificacao: 'Passivo Circulante', natureza: -1 },
+    { grupo: '4', sub_grupo: '1', elemento: '1', codigo: '4.1.1', nome: 'Contas a Pagar a Longo Prazo', classificacao: 'Passivo Não Circulante', natureza: -1 },
+    { grupo: '4', sub_grupo: '2', elemento: '1', codigo: '4.2.1', nome: 'Fornecedores a Pagar a Longo Prazo', classificacao: 'Passivo Não Circulante', natureza: -1 },
+    { grupo: '5', sub_grupo: '1', elemento: '1', codigo: '5.1.1', nome: 'Capital Social', classificacao: 'Patrimônio Líquido', natureza: -1 },
+    { grupo: '5', sub_grupo: '2', elemento: '1', codigo: '5.2.1', nome: 'Lucros Acumulados', classificacao: 'Patrimônio Líquido', natureza: -1 },
+    { grupo: '5', sub_grupo: '3', elemento: '1', codigo: '5.3.1', nome: 'Prejuízos Acumulados', classificacao: 'Patrimônio Líquido', natureza: 1 },
+    { grupo: '5', sub_grupo: '4', elemento: '1', codigo: '5.4.1', nome: 'Reserva de Lucros', classificacao: 'Patrimônio Líquido', natureza: -1 },
+    { grupo: '6', sub_grupo: '1', elemento: '1', codigo: '6.1.1', nome: 'Água/Luz', classificacao: 'Despesa', natureza: 1 },
+    { grupo: '6', sub_grupo: '2', elemento: '1', codigo: '6.2.1', nome: 'Salários', classificacao: 'Despesa', natureza: 1 },
+    { grupo: '6', sub_grupo: '3', elemento: '1', codigo: '6.3.1', nome: 'CMV', classificacao: 'Despesa', natureza: 1 },
+    { grupo: '6', sub_grupo: '3', elemento: '2', codigo: '6.3.2', nome: 'CPV', classificacao: 'Despesa', natureza: 1 },
+    { grupo: '6', sub_grupo: '3', elemento: '3', codigo: '6.3.3', nome: 'CSP', classificacao: 'Despesa', natureza: 1 },
+    { grupo: '6', sub_grupo: '4', elemento: '1', codigo: '6.4.1', nome: 'Despesa com Depreciação', classificacao: 'Despesa', natureza: 1 },
+    { grupo: '6', sub_grupo: '5', elemento: '1', codigo: '6.5.1', nome: 'Despesa Financeira', classificacao: 'Despesa', natureza: 1 },
+    { grupo: '6', sub_grupo: '6', elemento: '1', codigo: '6.6.1', nome: 'IRPJ/CSLL', classificacao: 'Despesa', natureza: 1 },
+    { grupo: '6', sub_grupo: '7', elemento: '1', codigo: '6.7.1', nome: 'Impostos sobre venda', classificacao: 'Despesa', natureza: 1 },
+    { grupo: '6', sub_grupo: '8', elemento: '1', codigo: '6.8.1', nome: 'Despesa não operacional', classificacao: 'Receita', natureza: -1 },
+    { grupo: '7', sub_grupo: '1', elemento: '1', codigo: '7.1.1', nome: 'Receita', classificacao: 'Receita', natureza: -1 },
+    { grupo: '7', sub_grupo: '2', elemento: '1', codigo: '7.2.1', nome: 'Receita Financeira', classificacao: 'Receita', natureza: -1 },
+    { grupo: '8', sub_grupo: '1', elemento: '1', codigo: '8.1.1', nome: 'ARE', classificacao: 'Despesa', natureza: 1 }
+];
+
+        async function importar() {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = 'Limpando a tabela antiga...';
+            // Limpa a tabela para garantir que apenas os dados novos existam
+            await supabaseClient.from('plano_de_contas_padrao').delete().gt('natureza', -2);
+
+            statusDiv.innerHTML = 'Iniciando importação...';
+            console.log('Tentando inserir', contasPadrao.length, 'contas...');
+
+            const { error } = await supabaseClient
+                .from('plano_de_contas_padrao')
+                .insert(contasPadrao);
+
+            if (error) {
+                statusDiv.innerHTML = `<strong>Erro na importação:</strong> ${error.message}`;
+                console.error(error);
+            } else {
+                statusDiv.innerHTML = '<strong>Importação concluída com sucesso!</strong>. Você já pode apagar este arquivo.';
+                console.log('Sucesso!');
+            }
+        }
+        document.getElementById('start-import').addEventListener('click', importar);
+    </script>
+</body>
+</html>

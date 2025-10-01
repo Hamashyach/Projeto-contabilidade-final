@@ -1,0 +1,42 @@
+<div class="header-container">
+    <h2>Balancete de Verificação</h2>
+</div>
+<p>Selecione um período para gerar o relatório com saldo anterior, movimentação e saldo final.</p>
+
+<div class="filtro-container form-container">
+    <div class="form-group">
+        <label for="data-inicio">Data de Início:</label>
+        <input type="date" id="data-inicio">
+    </div>
+    <div class="form-group">
+        <label for="data-fim">Data de Fim:</label>
+        <input type="date" id="data-fim">
+    </div>
+    <div class="form-actions">
+        <button id="btn-gerar-balancete" class="btn-submit">Gerar Balancete</button>
+    </div>
+</div>
+
+<div class="table-container">
+    <table id="tabela-balancete">
+        <thead>
+            <tr>
+                <th rowspan="2">Código</th>
+                <th rowspan="2">Conta</th>
+                <th colspan="2">Saldo Anterior</th>
+                <th colspan="2">Movimento do Período</th>
+                <th colspan="2">Saldo Final</th>
+            </tr>
+            <tr>
+                <th>Débito</th>
+                <th>Crédito</th>
+                <th>Débito</th>
+                <th>Crédito</th>
+                <th>Débito</th>
+                <th>Crédito</th>
+            </tr>
+        </thead>
+        <tbody id="corpo-tabela-balancete"></tbody>
+        <tfoot id="rodape-tabela-balancete"></tfoot>
+    </table>
+</div>

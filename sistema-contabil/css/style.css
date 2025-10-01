@@ -71,3 +71,391 @@ body {
     color: #34495e;
     font-size: 1.1em;
 }
+/* Estilos do Formulário */
+.form-container {
+    max-width: 600px;
+    margin-top: 20px;
+}
+.form-group {
+    margin-bottom: 15px;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #34495e;
+}
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; /* Garante que o padding não afete a largura total */
+}
+.form-actions {
+    margin-top: 20px;
+}
+.btn-submit {
+    background-color: #1abc9c;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+}
+.btn-submit:hover {
+    background-color: #16a085;
+}
+
+/* Estilos para a barra de seleção de empresa */
+#company-selector-bar {
+    background-color: #ecf0f1;
+    padding: 10px 40px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #bdc3c7;
+}
+
+#company-selector-bar label {
+    margin-right: 10px;
+    font-weight: 500;
+    color: #2c3e50;
+}
+
+#company-select {
+    min-width: 250px;
+    padding: 8px;
+    font-size: 1em;
+    border: 1px solid #bdc3c7;
+    border-radius: 4px;
+    background-color: white;
+}
+
+/* Estilos da Página de Setup */
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: -10px;
+}
+
+.table-container {
+    margin-top: 20px;
+    overflow-x: auto; /* Para rolagem em telas pequenas */
+}
+
+#tabela-plano-de-contas {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+}
+
+#tabela-plano-de-contas th,
+#tabela-plano-de-contas td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+#tabela-plano-de-contas th {
+    background-color: #f2f2f2;
+    font-weight: 500;
+}
+
+#form-container-nova-conta {
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+#form-container-nova-conta .form-group select {
+     width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+#form-container-nova-conta button {
+    padding: 10px 15px;
+    margin-right: 10px;
+}
+/* Estilos para a Página do Livro Diário */
+
+#form-container-novo-lancamento {
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+
+#form-container-novo-lancamento .form-group select,
+#form-container-novo-lancamento .form-group input[type="date"],
+#form-container-novo-lancamento .form-group input[type="number"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; 
+}
+
+#tabela-livro-diario {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    margin-top: 20px;
+}
+
+#tabela-livro-diario th,
+#tabela-livro-diario td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+#tabela-livro-diario th {
+    background-color: #f2f2f2;
+    font-weight: 500;
+}
+
+
+#tabela-livro-diario th:nth-child(4),
+#tabela-livro-diario td:nth-child(4),
+#tabela-livro-diario th:nth-child(5),
+#tabela-livro-diario td:nth-child(5) {
+    text-align: right;
+}
+
+
+#tabela-livro-diario td:nth-child(5) {
+    color: #27ae60;
+}
+
+
+#tabela-livro-diario td:nth-child(4) {
+    color: #c0392b;
+}
+.action-buttons {
+    display: flex;
+    gap: 5px; 
+}
+
+.btn-action {
+    padding: 5px 8px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8em;
+    color: white;
+}
+
+.btn-edit {
+    background-color: #f39c12; 
+}
+.btn-edit:hover {
+    background-color: #e67e22;
+}
+
+.btn-delete {
+    background-color: #e74c3c; 
+}
+.btn-delete:hover {
+    background-color: #c0392b;
+}
+
+/* Estilos para a Página do Livro Razão */
+#razao-container {
+    margin-top: 20px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 20px;
+}
+
+#razao-titulo-conta {
+    text-align: center;
+    color: #2c3e50;
+    border-bottom: 2px solid #34495e;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.razao-layout {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.razao-coluna {
+    width: 50%;
+}
+
+.razao-coluna h4 {
+    text-align: center;
+    margin-bottom: 10px;
+    color: #7f8c8d;
+}
+
+.razao-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.razao-table th, .razao-table td {
+    border: 1px solid #ecf0f1;
+    padding: 8px;
+    font-size: 0.9em;
+}
+
+.razao-table th {
+    background-color: #f9f9f9;
+}
+.razao-table td:last-child {
+    text-align: right;
+    font-family: monospace;
+}
+
+.razao-footer {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 2px solid #34495e;
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+}
+
+/* Estilos para a Página do Balancete */
+#tabela-balancete {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 0.9em;
+}
+
+#tabela-balancete th,
+#tabela-balancete td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+#tabela-balancete th {
+    background-color: #f2f2f2;
+}
+
+
+#tabela-balancete td:nth-child(3),
+#tabela-balancete th:nth-child(3),
+#tabela-balancete td:nth-child(4),
+#tabela-balancete th:nth-child(4),
+#tabela-balancete td:nth-child(5),
+#tabela-balancete th:nth-child(5) {
+    text-align: right;
+    font-family: monospace;
+}
+
+
+#tabela-balancete tfoot tr {
+    background-color: #34495e;
+    color: white;
+    font-weight: bold;
+}
+
+#tabela-balancete th[rowspan="2"] {
+    vertical-align: middle;
+}
+
+/* Estilos para o Balanço Patrimonial (Versão Hierárquica) */
+.report-container {
+    margin-top: 20px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 20px;
+    font-size: 0.9em;
+}
+
+.bp-section-title {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #34495e;
+    padding-bottom: 5px;
+}
+
+.bp-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.bp-table td {
+    padding: 6px 8px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+/* Linha de conta normal */
+.bp-account-row td:first-child {
+    padding-left: 30px; /* Indentação para contas */
+}
+.bp-account-row td:last-child {
+    text-align: right;
+    font-family: monospace;
+}
+
+/* Título de Grupo/Subgrupo */
+.bp-group-header td {
+    font-weight: bold;
+    color: #34495e;
+    padding-top: 15px;
+}
+
+/* Linha de Subtotal */
+.bp-subtotal-row td {
+    font-weight: bold;
+    text-align: right;
+    border-top: 1px solid #bdc3c7;
+    padding-top: 8px;
+}
+
+/* Linha de Total Geral do Grupo (ex: Total do Ativo) */
+.bp-grand-total-row td {
+    font-weight: bold;
+    font-size: 1.1em;
+    background-color: #ecf0f1;
+    text-align: right;
+    padding: 10px 8px;
+    border-top: 2px solid #34495e;
+}
+
+.filtro-container {
+    display: flex;
+    gap: 20px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.main-footer {
+    width: 100%;
+    padding: 24px 0;
+    margin-top: 40px; 
+    background-color: var(--c-background);
+    border-top: 1px solid var(--c-border);
+    text-align: center;
+}
+
+.main-footer p {
+    margin: 0;
+    color: var(--c-text-secondary);
+    font-size: 0.9em;
+    font-weight: 500;
+}
