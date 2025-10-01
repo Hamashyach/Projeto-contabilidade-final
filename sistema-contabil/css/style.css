@@ -1,0 +1,73 @@
+/* Estilo geral */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f7f6;
+    color: #333;
+}
+
+/* Cabeçalho superior */
+.header {
+    background-color: #ffffff;
+    padding: 0 40px;
+    display: flex;
+    justify-content: space-between; /* Alinha logo à esquerda e menu à direita */
+    align-items: center;
+    border-bottom: 1px solid #e0e0e0;
+    height: 70px;
+}
+
+/* Container da logo e título */
+.logo-container {
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    height: 40px; /* Ajuste a altura da sua logo */
+    margin-right: 15px;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 1.5em;
+    color: #2c3e50;
+}
+
+/* Navegação no topo */
+.top-nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+.top-nav ul li a {
+    display: block;
+    color: #34495e;
+    text-decoration: none;
+    padding: 25px 15px; /* Padding vertical para centralizar o texto */
+    font-weight: 500;
+    transition: color 0.3s, border-bottom 0.3s;
+    border-bottom: 3px solid transparent; /* Borda invisível para transição suave */
+}
+
+.top-nav ul li a:hover {
+    color: #1abc9c;
+    border-bottom: 3px solid #1abc9c;
+}
+
+/* Conteúdo principal */
+.content {
+    padding: 40px;
+}
+
+.content h2 {
+    color: #2c3e50;
+}
+
+.content p {
+    color: #34495e;
+    font-size: 1.1em;
+}
