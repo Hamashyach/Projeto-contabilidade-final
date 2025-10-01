@@ -517,3 +517,20 @@ body {
     font-size: 0.7em;
     font-weight: 500;
 }
+
+#btn-cancelar-nova-conta{
+    background-color: var(--c-danger);
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: 600;
+    transition: background-color 0.3s, transform 0.1s;  
+}
+
+#btn-cancelar-nova-conta:hover{
+    background-color: var(--c-danger-hover);
+
+}

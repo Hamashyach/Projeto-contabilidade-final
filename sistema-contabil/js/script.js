@@ -572,135 +572,122 @@ async function setupLivroRazao() {
 }
     // --- LÓGICA DO BALANCETE ---
     async function setupBalancete() {
-    const empresaAtivaId = localStorage.getItem('empresaAtivaId');
-    const corpoTabela = document.getElementById('corpo-tabela-balancete');
-    const rodapeTabela = document.getElementById('rodape-tabela-balancete');
-    const btnGerar = document.getElementById('btn-gerar-balancete');
-    const dataInicioInput = document.getElementById('data-inicio');
-    const dataFimInput = document.getElementById('data-fim');
-
-    if (!btnGerar || !dataInicioInput || !dataFimInput) {
-        console.error("ERRO: Elementos do formulário de filtro não encontrados no HTML.");
-        return;
-    }
-
-    if (!empresaAtivaId) {
-        corpoTabela.innerHTML = `<tr><td colspan="8"><b>Selecione uma empresa ativa primeiro.</b></td></tr>`;
-        btnGerar.disabled = true;
-        return;
-    }
+        const empresaAtivaId = localStorage.getItem('empresaAtivaId');
+        const corpoTabela = document.getElementById('corpo-tabela-balancete');
+        const rodapeTabela = document.getElementById('rodape-tabela-balancete');
+        const btnGerar = document.getElementById('btn-gerar-balancete');
+        const dataInicioInput = document.getElementById('data-inicio');
+        const dataFimInput = document.getElementById('data-fim');
     
-    // Define as datas padrão (início do mês e hoje)
-    const hoje = new Date();
-    const primeiroDiaDoMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
-    dataInicioInput.valueAsDate = primeiroDiaDoMes;
-    dataFimInput.valueAsDate = hoje;
-
-
-    btnGerar.addEventListener('click', async () => {
-        const dataInicio = dataInicioInput.value;
-        const dataFim = dataFimInput.value;
-
-        if (!dataInicio || !dataFim) {
-            alert("Por favor, selecione a Data de Início e a Data de Fim.");
+        if (!btnGerar || !dataInicioInput || !dataFimInput) {
+            console.error("ERRO: Elementos do formulário de filtro não encontrados no HTML.");
             return;
         }
-
-        corpoTabela.innerHTML = `<tr><td colspan="8">Gerando relatório, por favor aguarde...</td></tr>`;
-
-        // 1. Busca todas as contas e TODOS os lançamentos até a data final.
-        const [
-            { data: contas, error: errorContas },
-            { data: lancamentos, error: errorLancamentos }
-        ] = await Promise.all([
-            supabaseClient.from('plano_de_contas').select('*').eq('empresa_id', empresaAtivaId),
-            supabaseClient.from('lancamentos').select('conta_id, valor, tipo, data').eq('empresa_id', empresaAtivaId).lte('data', dataFim)
-        ]);
-
-        if (errorContas || errorLancamentos) {
-            alert('Erro ao buscar dados para o balancete.');
+    
+        if (!empresaAtivaId) {
+            corpoTabela.innerHTML = `<tr><td colspan="8"><b>Selecione uma empresa ativa primeiro.</b></td></tr>`;
+            btnGerar.disabled = true;
             return;
         }
-
-        // 2. Processa os lançamentos para calcular saldos
-        const movimentos = new Map();
-        contas.forEach(c => movimentos.set(c.id, { ...c, saldoAnterior: 0, movDebito: 0, movCredito: 0 }));
-
-        lancamentos.forEach(l => {
-            if (!movimentos.has(l.conta_id)) return;
+        
+        const hoje = new Date();
+        const primeiroDiaDoMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+        dataInicioInput.valueAsDate = primeiroDiaDoMes;
+        dataFimInput.valueAsDate = hoje;
+    
+        btnGerar.addEventListener('click', async () => {
+            const dataInicio = dataInicioInput.value;
+            const dataFim = dataFimInput.value;
+    
+            if (!dataInicio || !dataFim) {
+                alert("Por favor, selecione a Data de Início e a Data de Fim.");
+                return;
+            }
+    
+            corpoTabela.innerHTML = `<tr><td colspan="8">Gerando relatório, por favor aguarde...</td></tr>`;
+    
+            const [
+                { data: contas, error: errorContas },
+                { data: lancamentos, error: errorLancamentos }
+            ] = await Promise.all([
+                supabaseClient.from('plano_de_contas').select('*').eq('empresa_id', empresaAtivaId),
+                supabaseClient.from('lancamentos').select('conta_id, valor, tipo, data').eq('empresa_id', empresaAtivaId).lte('data', dataFim)
+            ]);
+    
+            if (errorContas || errorLancamentos) {
+                alert('Erro ao buscar dados para o balancete.');
+                return;
+            }
+    
+            const movimentos = new Map();
+            contas.forEach(c => movimentos.set(c.id, { ...c, saldoAnterior: 0, movDebito: 0, movCredito: 0 }));
+    
+            lancamentos.forEach(l => {
+                if (!movimentos.has(l.conta_id)) return;
+                const valor = l.tipo === 'D' ? l.valor : -l.valor;
+                if (l.data < dataInicio) {
+                    movimentos.get(l.conta_id).saldoAnterior += valor;
+                } else {
+                    if (l.tipo === 'D') movimentos.get(l.conta_id).movDebito += l.valor;
+                    else movimentos.get(l.conta_id).movCredito += l.valor;
+                }
+            });
             
-            const valor = l.tipo === 'D' ? l.valor : -l.valor;
-
-            if (l.data < dataInicio) { // Lançamentos ANTES do período
-                movimentos.get(l.conta_id).saldoAnterior += valor;
-            } else { // Lançamentos DENTRO do período
-                if (l.tipo === 'D') movimentos.get(l.conta_id).movDebito += l.valor;
-                else movimentos.get(l.conta_id).movCredito += l.valor;
+            let totais = { movDebito: 0, movCredito: 0, finalDebito: 0, finalCredito: 0, antDebito: 0, antCredito: 0 };
+            
+            corpoTabela.innerHTML = '';
+            const contasOrdenadas = Array.from(movimentos.values()).sort((a, b) => a.codigo.localeCompare(b.codigo));
+    
+            contasOrdenadas.forEach(conta => {
+                if (conta.saldoAnterior === 0 && conta.movDebito === 0 && conta.movCredito === 0) return;
+                
+                const saldoAntDebito = conta.saldoAnterior > 0 ? conta.saldoAnterior : 0;
+                const saldoAntCredito = conta.saldoAnterior < 0 ? -conta.saldoAnterior : 0;
+                
+                // --- LÓGICA CORRIGIDA AQUI ---
+                const saldoFinalNumerico = conta.saldoAnterior + conta.movDebito - conta.movCredito;
+                const saldoFinalDebito = saldoFinalNumerico > 0 ? saldoFinalNumerico : 0;
+                const saldoFinalCredito = saldoFinalNumerico < 0 ? -saldoFinalNumerico : 0;
+                
+                totais.antDebito += saldoAntDebito;
+                totais.antCredito += saldoAntCredito;
+                totais.movDebito += conta.movDebito;
+                totais.movCredito += conta.movCredito;
+                totais.finalDebito += saldoFinalDebito;
+                totais.finalCredito += saldoFinalCredito;
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${conta.codigo}</td>
+                    <td>${conta.nome}</td>
+                    <td>${saldoAntDebito.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+                    <td>${saldoAntCredito.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+                    <td>${conta.movDebito.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+                    <td>${conta.movCredito.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+                    <td>${saldoFinalDebito.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+                    <td>${saldoFinalCredito.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+                `;
+                corpoTabela.appendChild(tr);
+            });
+    
+            // Renderiza o rodapé com os totais
+            rodapeTabela.innerHTML = `
+                <tr>
+                    <td colspan="2">TOTAIS</td>
+                    <td>${totais.antDebito.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+                    <td>${totais.antCredito.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+                    <td>${totais.movDebito.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+                    <td>${totais.movCredito.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+                    <td>${totais.finalDebito.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+                    <td>${totais.finalCredito.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+                </tr>
+            `;
+            
+            if (totais.movDebito.toFixed(2) !== totais.movCredito.toFixed(2)) {
+                alert('Atenção! A soma dos débitos do período é diferente da soma dos créditos.');
             }
         });
-        
-        // 3. Renderiza a tabela
-        let totais = { movDebito: 0, movCredito: 0, finalDebito: 0, finalCredito: 0, antDebito: 0, antCredito: 0 };
-        
-        corpoTabela.innerHTML = '';
-        const contasOrdenadas = Array.from(movimentos.values()).sort((a, b) => a.codigo.localeCompare(b.codigo));
-
-        contasOrdenadas.forEach(conta => {
-            // Só exibe contas que tiveram saldo anterior ou movimentação
-            if (conta.saldoAnterior === 0 && conta.movDebito === 0 && conta.movCredito === 0) return;
-            
-            // Separa o saldo anterior em Débito ou Crédito
-            const saldoAntComNatureza = conta.saldoAnterior * conta.natureza;
-            const saldoAntDebito = saldoAntComNatureza > 0 ? saldoAntComNatureza : 0;
-            const saldoAntCredito = saldoAntComNatureza < 0 ? -saldoAntComNatureza : 0;
-            
-            // Cálculo do Saldo Final
-            const saldoFinalNumerico = conta.saldoAnterior + conta.movDebito - conta.movCredito;
-            const saldoFinalComNatureza = saldoFinalNumerico * conta.natureza;
-            const saldoFinalDebito = saldoFinalComNatureza > 0 ? saldoFinalComNatureza : 0;
-            const saldoFinalCredito = saldoFinalComNatureza < 0 ? -saldoFinalComNatureza : 0;
-            
-            // Soma aos totais gerais
-            totais.antDebito += saldoAntDebito;
-            totais.antCredito += saldoAntCredito;
-            totais.movDebito += conta.movDebito;
-            totais.movCredito += conta.movCredito;
-            totais.finalDebito += saldoFinalDebito;
-            totais.finalCredito += saldoFinalCredito;
-            
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${conta.codigo}</td>
-                <td>${conta.nome}</td>
-                <td>${saldoAntDebito.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
-                <td>${saldoAntCredito.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
-                <td>${conta.movDebito.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
-                <td>${conta.movCredito.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
-                <td>${saldoFinalDebito.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
-                <td>${saldoFinalCredito.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
-            `;
-            corpoTabela.appendChild(tr);
-        });
-
-        // 4. Renderiza o rodapé com os totais
-        rodapeTabela.innerHTML = `
-            <tr>
-                <td colspan="2">TOTAIS</td>
-                <td>${totais.antDebito.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
-                <td>${totais.antCredito.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
-                <td>${totais.movDebito.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
-                <td>${totais.movCredito.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
-                <td>${totais.finalDebito.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
-                <td>${totais.finalCredito.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
-            </tr>
-        `;
-        
-        if (totais.movDebito.toFixed(2) !== totais.movCredito.toFixed(2)) {
-            alert('Atenção! A soma dos débitos do período é diferente da soma dos créditos.');
-        }
-    });
-}
-
+    }
 // --- LÓGICA DO BALANÇO PATRIMONIAL ---
 async function setupBalancoPatrimonial() {
     const empresaAtivaId = localStorage.getItem('empresaAtivaId');
@@ -719,10 +706,7 @@ async function setupBalancoPatrimonial() {
         return;
     }
 
-    // Define a data padrão como hoje
     dataFimInput.valueAsDate = new Date();
-
-    const MAPA_NOMES = { /* ... (pode manter seu mapa de nomes aqui se tiver um) ... */ };
 
     btnGerar.addEventListener('click', async () => {
         const dataFim = dataFimInput.value;
@@ -733,111 +717,98 @@ async function setupBalancoPatrimonial() {
 
         balancoContainer.innerHTML = `<p>Gerando relatório, por favor aguarde...</p>`;
 
-        // 1. Busca todas as contas e os lançamentos ATÉ a data final selecionada.
-        const [
-            { data: contas, error: errorContas },
-            { data: lancamentos, error: errorLancamentos }
-        ] = await Promise.all([
+        const [ { data: contas }, { data: lancamentos } ] = await Promise.all([
             supabaseClient.from('plano_de_contas').select('*').eq('empresa_id', empresaAtivaId),
             supabaseClient.from('lancamentos').select('conta_id, valor, tipo').eq('empresa_id', empresaAtivaId).lte('data', dataFim)
         ]);
 
-        if (errorContas || errorLancamentos) {
-            alert('Erro ao buscar dados para o balanço.');
-            return;
-        }
-
-        // 2. Calcula o saldo final de cada conta na data especificada
+        // 1. Calcula o saldo de cada conta (Débitos - Créditos)
         const saldos = new Map();
-        contas.forEach(c => saldos.set(c.id, { ...c, saldoFinal: 0 }));
+        contas.forEach(c => saldos.set(c.id, { ...c, saldo: 0 }));
         lancamentos.forEach(l => {
             const conta = saldos.get(l.conta_id);
             if (conta) {
-                const valor = l.tipo === 'D' ? l.valor : -l.valor;
-                // Multiplica pela natureza para ter o saldo correto (positivo para devedora, negativo para credora)
-                conta.saldoFinal += valor * conta.natureza; 
+                conta.saldo += l.tipo === 'D' ? l.valor : -l.valor;
             }
         });
 
-        // 3. Constrói a estrutura hierárquica 
+        // 2. Constrói a estrutura hierárquica, já tratando o saldo pela natureza da conta
         const estrutura = {};
         saldos.forEach(conta => {
-            if (conta.saldoFinal === 0) return;
-            const { grupo, sub_grupo, elemento } = conta;
-            if (!estrutura[grupo]) estrutura[grupo] = {};
-            if (!estrutura[grupo][sub_grupo]) estrutura[grupo][sub_grupo] = {};
-            if (!estrutura[grupo][sub_grupo][elemento]) estrutura[grupo][sub_grupo][elemento] = [];
-            estrutura[grupo][sub_grupo][elemento].push(conta);
+            const saldoFinal = conta.saldo * conta.natureza;
+            if (Math.abs(saldoFinal) < 0.001) return; // Ignora contas com saldo zero
+            
+            conta.saldoFinal = saldoFinal; 
+
+            const { grupo, sub_grupo, elemento, classificacao } = conta;
+            if (!estrutura[classificacao]) estrutura[classificacao] = [];
+            estrutura[classificacao].push(conta);
         });
 
-        // 4. A lógica de renderização hierárquica 
-        const renderizarSecao = (gruposParaRenderizar, tituloSecao) => {
-           
-            let html = `<div class="bp-section-title">${tituloSecao}</div>`;
-            let totalSecao = 0;
-            html += '<table class="bp-table">';
-            for (const grupoId of gruposParaRenderizar) {
-                if (!estrutura[grupoId]) continue;
-                let totalGrupo = 0;
-                const nomeGrupo = MAPA_NOMES[grupoId]?.nome || `Grupo ${grupoId}`;
-                html += `<tr class="bp-group-header"><td colspan="2">${nomeGrupo}</td></tr>`;
-                for (const subgrupoId in estrutura[grupoId]) {
-                    for (const elementoId in estrutura[grupoId][subgrupoId]) {
-                        const contasDoElemento = estrutura[grupoId][subgrupoId][elementoId];
-                        contasDoElemento.sort((a,b) => a.codigo.localeCompare(b.codigo));
-                        contasDoElemento.forEach(conta => {
-                            totalGrupo += conta.saldoFinal;
-                            html += `<tr class="bp-account-row">
-                                        <td>${conta.codigo} - ${conta.nome}</td>
-                                        <td>${Math.abs(conta.saldoFinal).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
-                                     </tr>`;
-                        });
-                    }
-                }
-                totalSecao += totalGrupo;
-                html += `<tr class="bp-subtotal-row">
-                            <td class="total-tipo">Total ${nomeGrupo}</td>
-                            <td>${totalGrupo.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+        // 3. Função de Renderização CORRIGIDA
+        const renderizarGrupo = (nomeGrupo) => {
+            const contasDoGrupo = estrutura[nomeGrupo] || [];
+            if (contasDoGrupo.length === 0) return { html: '', total: 0 };
+            
+            let html = `<div class="bp-section-title">${nomeGrupo}</div><table class="bp-table"><tbody>`;
+            let totalGrupo = 0;
+            
+            contasDoGrupo.sort((a,b) => a.codigo.localeCompare(b.codigo));
+            
+            contasDoGrupo.forEach(c => {
+                totalGrupo += c.saldoFinal;
+                html += `<tr class="bp-account-row">
+                            <td>${c.codigo} - ${c.nome}</td>
+                            <td>${Math.abs(c.saldoFinal).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
                          </tr>`;
-            }
-            html += '</table>';
-            html += `<table class="bp-table"><tr class="bp-grand-total-row">
-                        <td>TOTAL ${tituloSecao}</td>
-                        <td>${totalSecao.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
-                     </tr></table>`;
-            return { html, total: totalSecao };
+            });
+            
+            html += `<tr class="bp-grand-total-row">
+                        <td>Total ${nomeGrupo}</td>
+                        <td>${totalGrupo.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+                     </tr>`;
+            html += `</tbody></table>`;
+            return { html, total: totalGrupo };
         };
-        
-        // 5. Renderiza o relatório completo
-        const ativo = renderizarSecao(['1', '2'], 'ATIVO');
-        const passivo = renderizarSecao(['3', '4'], 'PASSIVO');
-        const pl = renderizarSecao(['5'], 'PATRIMÔNIO LÍQUIDO');
 
-        const resultadoReceitas = Array.from(saldos.values()).filter(c => c.classificacao === 'Receita').reduce((acc, c) => acc + c.saldoFinal, 0);
-        const resultadoDespesas = Array.from(saldos.values()).filter(c => c.classificacao === 'Despesa').reduce((acc, c) => acc + c.saldoFinal, 0);
-        const resultadoExercicio = Math.abs(resultadoReceitas) - resultadoDespesas;
+        // 4. Renderiza o relatório completo
+        const ativoCirculante = renderizarGrupo('Ativo Circulante');
+        const ativoNaoCirculante = renderizarGrupo('Ativo Não Circulante');
+        const passivoCirculante = renderizarGrupo('Passivo Circulante');
+        const passivoNaoCirculante = renderizarGrupo('Passivo Não Circulante');
+        const patrimonioLiquido = renderizarGrupo('Patrimônio Líquido');
+
+        const totalAtivo = ativoCirculante.total + ativoNaoCirculante.total;
+
+        // Calcula o Resultado do Exercício
+        const resultadoReceitas = (estrutura['Receita'] || []).reduce((acc, c) => acc + c.saldoFinal, 0);
+        const resultadoDespesas = (estrutura['Despesa'] || []).reduce((acc, c) => acc + c.saldoFinal, 0);
+        const resultadoExercicio = resultadoReceitas - resultadoDespesas;
 
         let resultadoHtml = '';
-        if (resultadoExercicio !== 0) {
-            resultadoHtml = `<table class="bp-table">
+        if (Math.abs(resultadoExercicio) > 0.001) {
+            resultadoHtml = `<table class="bp-table"><tbody>
                                 <tr class="bp-account-row">
-                                    <td>Resultado do Exercício</td>
-                                    <td>${Math.abs(resultadoExercicio).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+                                    <td style="font-weight: bold;">Resultado do Exercício</td>
+                                    <td style="font-weight: bold;">${resultadoExercicio.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
                                 </tr>
-                             </table>`;
+                            </tbody></table>`;
         }
         
-        const totalPassivoEPL = passivo.total + pl.total + resultadoExercicio;
+        const totalPassivoEPL = passivoCirculante.total + passivoNaoCirculante.total + patrimonioLiquido.total + resultadoExercicio;
 
-        const totalPassivoEPLHtml = `<table class="bp-table"><tr class="bp-grand-total-row">
-                                        <td>TOTAL PASSIVO E PATRIMÔNIO LÍQUIDO</td>
-                                        <td>${totalPassivoEPL.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
-                                     </tr></table>`;
+        // Monta o HTML Final
+        let htmlFinal = `<div class="bp-section-title">ATIVO</div>` + ativoCirculante.html + ativoNaoCirculante.html;
+        htmlFinal += `<table class="bp-table"><tr class="bp-grand-total-row"><td>TOTAL ATIVO</td><td>${totalAtivo.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td></tr></table>`;
 
-        balancoContainer.innerHTML = ativo.html + passivo.html + pl.html + resultadoHtml + totalPassivoEPLHtml;
+        htmlFinal += `<div class="bp-section-title">PASSIVO E PATRIMÔNIO LÍQUIDO</div>` + passivoCirculante.html + passivoNaoCirculante.html + patrimonioLiquido.html + resultadoHtml;
+        htmlFinal += `<table class="bp-table"><tr class="bp-grand-total-row"><td>TOTAL PASSIVO E PL</td><td>${totalPassivoEPL.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td></tr></table>`;
 
-        if (ativo.total.toFixed(2) !== totalPassivoEPL.toFixed(2)) {
-            alert('Atenção! O Total do Ativo não bate com o Total do Passivo + PL.');
+        balancoContainer.innerHTML = htmlFinal;
+        
+        // Verificação final
+        if (totalAtivo.toFixed(2) !== totalPassivoEPL.toFixed(2)) {
+            alert('Atenção! O Total do Ativo não bate com o Total do Passivo + PL. Verifique os lançamentos e a natureza/classificação das contas.');
         }
     });
 }
