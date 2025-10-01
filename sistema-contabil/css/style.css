@@ -504,7 +504,7 @@ body {
     bottom: 0;     
     left: 0;        
     width: 100%;    
-    padding: 24px 0;
+    padding: 10px 0;
     background-color: var(--c-primary-dark);
     border-top: 1px solid var(--c-border);
     text-align: center;
@@ -514,6 +514,6 @@ body {
 .main-footer p {
     margin: 0;
     color: white;
-    font-size: 0.9em;
+    font-size: 0.7em;
     font-weight: 500;
 }
