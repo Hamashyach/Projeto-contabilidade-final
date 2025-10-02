@@ -699,13 +699,11 @@ async function setupBalancoPatrimonial() {
         console.error("ERRO: Elementos do formulário de filtro não encontrados no HTML.");
         return;
     }
-
     if (!empresaAtivaId) {
         balancoContainer.innerHTML = `<p><b>Selecione uma empresa ativa primeiro.</b></p>`;
         btnGerar.disabled = true;
         return;
     }
-
     dataFimInput.valueAsDate = new Date();
 
     btnGerar.addEventListener('click', async () => {
@@ -714,7 +712,6 @@ async function setupBalancoPatrimonial() {
             alert("Por favor, selecione a data para gerar o balanço.");
             return;
         }
-
         balancoContainer.innerHTML = `<p>Gerando relatório, por favor aguarde...</p>`;
 
         const [ { data: contas }, { data: lancamentos } ] = await Promise.all([
@@ -722,32 +719,26 @@ async function setupBalancoPatrimonial() {
             supabaseClient.from('lancamentos').select('conta_id, valor, tipo').eq('empresa_id', empresaAtivaId).lte('data', dataFim)
         ]);
 
-        // 1. Calcula o saldo de cada conta (Débitos - Créditos)
         const saldos = new Map();
-        contas.forEach(c => saldos.set(c.id, { ...c, saldo: 0 }));
+        contas.forEach(c => saldos.set(c.id, { ...c, saldoBruto: 0 }));
         lancamentos.forEach(l => {
             const conta = saldos.get(l.conta_id);
             if (conta) {
-                conta.saldo += l.tipo === 'D' ? l.valor : -l.valor;
+                conta.saldoBruto += l.tipo === 'D' ? l.valor : -l.valor;
             }
         });
 
-        // 2. Constrói a estrutura hierárquica, já tratando o saldo pela natureza da conta
-        const estrutura = {};
+        const grupos = new Map();
         saldos.forEach(conta => {
-            const saldoFinal = conta.saldo * conta.natureza;
-            if (Math.abs(saldoFinal) < 0.001) return; // Ignora contas com saldo zero
-            
-            conta.saldoFinal = saldoFinal; 
-
-            const { grupo, sub_grupo, elemento, classificacao } = conta;
-            if (!estrutura[classificacao]) estrutura[classificacao] = [];
-            estrutura[classificacao].push(conta);
+            if (Math.abs(conta.saldoBruto) < 0.001) return;
+            if (!grupos.has(conta.classificacao)) {
+                grupos.set(conta.classificacao, []);
+            }
+            grupos.get(conta.classificacao).push(conta);
         });
-
-        // 3. Função de Renderização CORRIGIDA
+        
         const renderizarGrupo = (nomeGrupo) => {
-            const contasDoGrupo = estrutura[nomeGrupo] || [];
+            const contasDoGrupo = grupos.get(nomeGrupo) || [];
             if (contasDoGrupo.length === 0) return { html: '', total: 0 };
             
             let html = `<div class="bp-section-title">${nomeGrupo}</div><table class="bp-table"><tbody>`;
@@ -756,14 +747,26 @@ async function setupBalancoPatrimonial() {
             contasDoGrupo.sort((a,b) => a.codigo.localeCompare(b.codigo));
             
             contasDoGrupo.forEach(c => {
-                totalGrupo += c.saldoFinal;
-                html += `<tr class="bp-account-row">
+                totalGrupo += c.saldoBruto;
+                
+                
+                const valorFormatado = Math.abs(c.saldoBruto).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+                let rowClass = 'bp-account-row';
+                let valorExibido = valorFormatado;
+
+          
+                if (c.saldoBruto < 0) {
+                    rowClass += ' bp-negative-value'; 
+                    valorExibido = `- ${valorFormatado}`; 
+                }
+                
+                html += `<tr class="${rowClass}">
                             <td>${c.codigo} - ${c.nome}</td>
-                            <td>${Math.abs(c.saldoFinal).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+                            <td>${valorExibido}</td>
                          </tr>`;
             });
             
-            html += `<tr class="bp-grand-total-row">
+            html += `<tr class="bp-total-row">
                         <td>Total ${nomeGrupo}</td>
                         <td>${totalGrupo.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
                      </tr>`;
@@ -771,44 +774,40 @@ async function setupBalancoPatrimonial() {
             return { html, total: totalGrupo };
         };
 
-        // 4. Renderiza o relatório completo
         const ativoCirculante = renderizarGrupo('Ativo Circulante');
         const ativoNaoCirculante = renderizarGrupo('Ativo Não Circulante');
         const passivoCirculante = renderizarGrupo('Passivo Circulante');
         const passivoNaoCirculante = renderizarGrupo('Passivo Não Circulante');
         const patrimonioLiquido = renderizarGrupo('Patrimônio Líquido');
-
         const totalAtivo = ativoCirculante.total + ativoNaoCirculante.total;
-
-        // Calcula o Resultado do Exercício
-        const resultadoReceitas = (estrutura['Receita'] || []).reduce((acc, c) => acc + c.saldoFinal, 0);
-        const resultadoDespesas = (estrutura['Despesa'] || []).reduce((acc, c) => acc + c.saldoFinal, 0);
+        
+        const resultadoReceitas = (grupos.get('Receita') || []).reduce((acc, c) => acc + (c.saldoBruto * c.natureza), 0);
+        const resultadoDespesas = (grupos.get('Despesa') || []).reduce((acc, c) => acc + (c.saldoBruto * c.natureza), 0);
         const resultadoExercicio = resultadoReceitas - resultadoDespesas;
 
         let resultadoHtml = '';
         if (Math.abs(resultadoExercicio) > 0.001) {
+            const valorFormatado = Math.abs(resultadoExercicio).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+            const ePrejuizo = resultadoExercicio < 0;
             resultadoHtml = `<table class="bp-table"><tbody>
-                                <tr class="bp-account-row">
-                                    <td style="font-weight: bold;">Resultado do Exercício</td>
-                                    <td style="font-weight: bold;">${resultadoExercicio.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+                                <tr class="bp-account-row ${ePrejuizo ? 'bp-negative-value' : ''}">
+                                    <td style="font-weight: bold;">(Lucro/Prejuízo)</td>
+                                    <td style="font-weight: bold;">${ePrejuizo ? `- ${valorFormatado}` : valorFormatado}</td>
                                 </tr>
                             </tbody></table>`;
         }
         
-        const totalPassivoEPL = passivoCirculante.total + passivoNaoCirculante.total + patrimonioLiquido.total + resultadoExercicio;
-
-        // Monta o HTML Final
-        let htmlFinal = `<div class="bp-section-title">ATIVO</div>` + ativoCirculante.html + ativoNaoCirculante.html;
+        const totalPassivoEPL = -(passivoCirculante.total + passivoNaoCirculante.total + patrimonioLiquido.total) + resultadoExercicio;
+        
+        let htmlFinal = ativoCirculante.html + ativoNaoCirculante.html;
         htmlFinal += `<table class="bp-table"><tr class="bp-grand-total-row"><td>TOTAL ATIVO</td><td>${totalAtivo.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td></tr></table>`;
-
         htmlFinal += `<div class="bp-section-title">PASSIVO E PATRIMÔNIO LÍQUIDO</div>` + passivoCirculante.html + passivoNaoCirculante.html + patrimonioLiquido.html + resultadoHtml;
         htmlFinal += `<table class="bp-table"><tr class="bp-grand-total-row"><td>TOTAL PASSIVO E PL</td><td>${totalPassivoEPL.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td></tr></table>`;
-
-        balancoContainer.innerHTML = htmlFinal;
         
-        // Verificação final
+        balancoContainer.innerHTML = htmlFinal;
+
         if (totalAtivo.toFixed(2) !== totalPassivoEPL.toFixed(2)) {
-            alert('Atenção! O Total do Ativo não bate com o Total do Passivo + PL. Verifique os lançamentos e a natureza/classificação das contas.');
+            alert('Atenção! O Total do Ativo não bate com o Total do Passivo + PL.');
         }
     });
 }

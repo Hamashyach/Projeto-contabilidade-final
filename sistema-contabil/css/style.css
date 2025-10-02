@@ -534,3 +534,8 @@ body {
     background-color: var(--c-danger-hover);
 
 }
+
+
+.bp-negative-value td {
+    color: var(--c-danger) !important; 
+}
