@@ -384,9 +384,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td style="color: #c0392b;">${valorFormatado}</td>
                 <td></td>
                 <td rowspan="2" style="vertical-align: middle; text-align: center;">
-                    <div class="action-buttons">
-                        <button class="btn-action btn-edit" data-partida-id="${partida_id}">Editar</button>
-                    </div>
                 </td>
             `;
 
