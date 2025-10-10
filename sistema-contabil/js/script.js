@@ -381,7 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${dataFormatada}</td>
                 <td>${lancamento.debito.plano_de_contas.codigo} - ${lancamento.debito.plano_de_contas.nome}</td>
                 <td>${lancamento.debito.historico}</td>
-                <td style="color: #c0392b;">${valorFormatado}</td>
+                <td style="color: #27ae60;">${valorFormatado}</td>
                 <td></td>
                 <td rowspan="2" style="vertical-align: middle; text-align: center;">
                 </td>
@@ -394,7 +394,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${lancamento.credito.plano_de_contas.codigo} - ${lancamento.credito.plano_de_contas.nome}</td>
                 <td></td>
                 <td></td>
-                <td style="color: #27ae60;">${valorFormatado}</td>
+                <td style="color: #c0392b;">${valorFormatado}</td>
             `;
 
             corpoTabela.appendChild(trDebito);
