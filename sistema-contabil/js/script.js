@@ -35,6 +35,37 @@ document.addEventListener('DOMContentLoaded', () => {
         loadContent('balanco-patrimonial.html');
     });
 
+    function aplicarMascaraDeMoeda(inputElement) {
+        const formatarValor = (valor) => {
+            return new Intl.NumberFormat('pt-BR', {
+                style: 'decimal',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(valor);
+        };
+    
+        inputElement.addEventListener('input', (e) => {
+            // Pega o valor digitado e remove tudo que não for número
+            let valorNumerico = e.target.value.replace(/\D/g, '');
+    
+            // Se estiver vazio, não faz nada
+            if (valorNumerico === '') return;
+    
+            // Converte para número (ex: "12345" vira 123.45)
+            valorNumerico = parseFloat(valorNumerico) / 100;
+    
+            // Formata o número para o padrão brasileiro (ex: "1.234,56")
+            e.target.value = formatarValor(valorNumerico);
+        });
+    
+        // Garante que se o campo estiver vazio, ele não mostre "0,00"
+        inputElement.addEventListener('blur', (e) => {
+            if (e.target.value === '0,00') {
+                e.target.value = '';
+            }
+        });
+    }
+
     // Função principal para carregar conteúdo
     async function loadContent(page) {
         try {
@@ -168,7 +199,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const valor = item.split(' ')[0]; // Pega só o número
             grupoSelect.innerHTML += `<option value="${valor}">${item}</option>`;
         });
-        OPCOES.subgrupo.forEach(item => subgrupoSelect.innerHTML += `<option value="${item}">${item}</option>`);
+        OPCOES.subgrupo.forEach(item => {
+            const valor = item.split(' ')[0]; // Pega só o número
+            subgrupoSelect.innerHTML += `<option value="${valor}">${item}</option>`;
+        });
     }
 
     // Função para gerar o próximo código
@@ -324,10 +358,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const empresaAtivaId = localStorage.getItem('empresaAtivaId');
     const corpoTabela = document.getElementById('corpo-tabela-livro-diario');
     
+
+    
     if (!empresaAtivaId) {
         corpoTabela.innerHTML = `<tr><td colspan="6"><b>Selecione uma empresa ativa para ver o Livro Diário.</b></td></tr>`;
         return;
     }
+
+    
 
     // --- Elementos do formulário ---
     const formContainer = document.getElementById('form-container-novo-lancamento');
