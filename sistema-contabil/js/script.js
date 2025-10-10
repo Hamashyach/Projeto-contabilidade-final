@@ -137,7 +137,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const OPCOES = {
         classificacao: ['Ativo Circulante', 'Ativo Não Circulante', 'Passivo Circulante', 'Passivo Não Circulante', 'Patrimônio Líquido', 'Receita', 'Despesa'],
         grupo: ['1 - Ativo', '2 - Ativo Não Circulante', '3 - Passivo Circulante', '4 - Passivo Não Circulante', '5 - Patrimônio Líquido', '6 - Despesa', '7 - Receita', '8 - Apuração'],
-        subgrupo: ['1', '2', '3', '4', '5', '6', '7', '8'] // Simplificado, pode ser expandido
+        subgrupo: [
+            '1 - Disponibilidades / Obrigações',
+            '2 - Créditos / Fornecedores',
+            '3 - Estoques / Impostos',
+            '4 - Despesas Antecipadas / Outras Obrigações',
+            '5 - Ativos a Longo Prazo / Financiamentos',
+            '6 - Investimentos / Empréstimos',
+            '7 - Imobilizado / Debêntures',
+            '8 - Intangível / Outras'
+        ]
     };
 
     // --- Lógica do formulário de nova conta ---
