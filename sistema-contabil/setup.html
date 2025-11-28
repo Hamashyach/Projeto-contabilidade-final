@@ -1,73 +1,85 @@
-<div class="header-container">
-    <h2>Plano de Contas</h2>
-    <button id="btn-nova-conta" class="btn-submit">+ Nova Conta</button>
-</div>
-<p>Visualize e gerencie as contas contábeis da empresa selecionada.</p>
+<main class="container">
+    <div class="header-container">
+        <h2>Plano de Contas</h2>
+        <button id="btn-nova-conta" class="btn-submit">+ Nova Conta</button>
+    </div>
+    <p>Visualize e gerencie as contas contábeis da empresa selecionada.</p>
 
-<div id="form-container-nova-conta" class="form-container" style="display: none;">
-    <form id="form-nova-conta">
-        <h3>Cadastrar Nova Conta</h3>
-        <p>Selecione as opções para gerar o código automaticamente.</p>
-        
-        <div class="form-group">
-            <label for="classificacao">Classificação:</label>
-            <select id="new-conta-classificacao" name="classificacao" required>
-                <option value="">-- Selecione --</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="grupo">Grupo:</label>
-            <select id="new-conta-grupo" name="grupo" required>
-                <option value="">-- Selecione --</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="subgrupo">Subgrupo:</label>
-             <select id="new-conta-subgrupo" name="sub_grupo" required>
-                <option value="">-- Selecione --</option>
-            </select>
-        </div>
-         <div class="form-group">
-            <label for="elemento">Elemento (Automático):</label>
-            <input type="text" id="new-conta-elemento" name="elemento" readonly style="background-color: #eee;">
-        </div>
-         <div class="form-group">
-            <label for="codigo">Código da Conta (Automático):</label>
-            <input type="text" id="new-conta-codigo" name="codigo" readonly style="background-color: #eee;">
-        </div>
-        <div class="form-group">
-            <label for="nome">Nome da Conta:</label>
-            <input type="text" id="nome" name="nome" required>
-        </div>
-        <div class="form-group">
-            <label for="natureza">Natureza:</label>
-            <select id="natureza" name="natureza" required>
-                <option value="">-- Selecione --</option>
-                <option value="1">Devedora</option>
-                <option value="-1">Credora</option>
-            </select>
-        </div>
-        <div class="form-actions">
-            <button type="submit" class="btn-submit">Salvar Conta</button>
-            <button type="button" id="btn-cancelar-nova-conta">Cancelar</button>
-        </div>
-    </form>
-</div>
+    <div id="form-container-nova-conta" class="form-container" style="display: none;">
+        <form id="form-nova-conta">
+            <h3>Cadastrar Nova Conta</h3>
+            <p>Selecione o Grupo e Subgrupo para gerar o código automaticamente.</p>
+            
+            <div class="form-group">
+                <label for="new-conta-grupo">Grupo:</label>
+                <select id="new-conta-grupo" name="grupo" required>
+                    <option value="">-- Selecione --</option>
+                    <option value="1">1 - ATIVO</option>
+                    <option value="2">2 - PASSIVO</option>
+                    <option value="3">3 - PATRIMÔNIO LÍQUIDO</option>
+                    <option value="4">4 - DESPESAS</option>
+                    <option value="5">5 - RECEITAS</option>
+                    <option value="6">6 - TRANSITÓRIAS</option>
+                </select>
+            </div>
 
-<div class="table-container">
-    <table id="tabela-plano-de-contas">
-        <thead>
-            <tr>
-                <th>Código</th>
-                <th>Nome da Conta</th>
-                <th>Classificação</th>
-                <th>Grupo</th>
-                <th>Subgrupo</th>
-                <th>Elemento</th>
-                <th>Natureza</th>
-            </tr>
-        </thead>
-        <tbody id="corpo-tabela-contas">
-            </tbody>
-    </table>
-</div>
+            <div class="form-group">
+                <label for="new-conta-subgrupo">Subgrupo:</label>
+                <select id="new-conta-subgrupo" name="sub_grupo" required disabled>
+                    <option value="">-- Selecione um Grupo primeiro --</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="new-conta-classificacao">Classificação (Automático):</label>
+                <input type="text" id="new-conta-classificacao" name="classificacao" readonly style="background-color: #eee;">
+            </div>
+
+            <div class="form-group">
+                <label for="new-conta-elemento">Elemento (Automático):</label>
+                <input type="text" id="new-conta-elemento" name="elemento" readonly style="background-color: #eee;">
+            </div>
+
+            <div class="form-group">
+                <label for="new-conta-codigo">Código da Conta (Automático):</label>
+                <input type="text" id="new-conta-codigo" name="codigo" readonly style="background-color: #eee; font-weight: bold;">
+            </div>
+
+            <div class="form-group">
+                <label for="nome">Nome da Conta:</label>
+                <input type="text" id="nome" name="nome" placeholder="Ex: Caixa, Fornecedores" required>
+            </div>
+
+            <div class="form-group">
+                <label for="natureza">Natureza:</label>
+                <select id="natureza" name="natureza" required>
+                    <option value="">-- Automático --</option>
+                    <option value="1">Devedora (+)</option>
+                    <option value="-1">Credora (-)</option>
+                </select>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-submit">Salvar Conta</button>
+                <button type="button" id="btn-cancelar-nova-conta">Cancelar</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="table-container">
+        <table id="tabela-plano-de-contas">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Nome da Conta</th>
+                    <th>Classificação</th>
+                    <th>Natureza</th>
+                </tr>
+            </thead>
+            <tbody id="corpo-tabela-contas">
+                </tbody>
+        </table>
+    </div>
+</main>
+
+<script type="module" src="./js/pages/setup.js"></script>

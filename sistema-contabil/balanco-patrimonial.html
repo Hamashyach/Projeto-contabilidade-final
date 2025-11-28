@@ -1,17 +1,128 @@
 <div class="header-container">
     <h2>Balanço Patrimonial</h2>
+    <div class="header-actions">
+        <button id="btn-imprimir-balanco" class="btn-submit" style="background-color: #6c757d; display: none;">🖨️ Imprimir</button>
+    </div>
 </div>
-<p>Selecione a data para gerar a posição financeira e patrimonial da empresa.</p>
+<p>Selecione a <b>Data Início</b> (Período Anterior para comparação) e <b>Data Fim</b> (Período Atual).</p>
 
-<div class="filtro-container form-container">
+<div class="filtro-container no-print">
     <div class="form-group">
-        <label for="data-fim-balanco">Posição em:</label>
-        <input type="date" id="data-fim-balanco">
+        <label for="data-inicio">Data Anterior (Comparação):</label>
+        <input type="date" id="data-inicio">
+    </div>
+    <div class="form-group">
+        <label for="data-fim">Data Atual (Base):</label>
+        <input type="date" id="data-fim">
     </div>
     <div class="form-actions">
-        <button id="btn-gerar-balanco" class="btn-submit">Gerar Balanço</button>
+         <button id="btn-gerar-balanco" class="btn-submit">Gerar Balanço</button>
+         <button id="btn-fechamento" class="btn-submit" style="background-color: #2c3e50; display: none;">🔒 Realizar Fechamento</button>
     </div>
 </div>
 
-<div id="balanco-container" class="report-container">
+<div id="relatorio-balanco" class="balanco-layout" style="display: none;">
+    
+    <div class="coluna-balanco">
+        <div class="titulo-coluna ativo">ATIVO</div>
+        
+        <div class="grid-header">
+            <span>Conta</span>
+            <span>Atual</span>
+            <span>AV%</span>
+            <span>Anterior</span>
+            <span>AV%</span>
+            <span>AH%</span>
+        </div>
+
+        <div id="container-ativo"></div>
+        
+        <div class="total-geral ativo-bg">
+            <span>TOTAL DO ATIVO</span>
+            <span id="lbl-total-ativo">R$ 0,00</span>
+        </div>
     </div>
+
+    <div class="coluna-balanco">
+        <div class="titulo-coluna passivo">PASSIVO + PL</div>
+
+        <div class="grid-header">
+            <span>Conta</span>
+            <span>Atual</span>
+            <span>AV%</span>
+            <span>Anterior</span>
+            <span>AV%</span>
+            <span>AH%</span>
+        </div>
+        
+        <div id="container-passivo"></div>
+        
+        <div class="titulo-coluna pl" style="margin-top: 20px; font-size: 1em; border-bottom: 1px solid #ccc;">PATRIMÔNIO LÍQUIDO</div>
+        <div id="container-pl"></div>
+
+        <div class="total-geral passivo-bg">
+            <span>TOTAL PASSIVO + PL</span>
+            <span id="lbl-total-passivo">R$ 0,00</span>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Layout Principal: Duas grandes colunas (Ativo e Passivo) */
+    .balanco-layout { 
+        display: grid; 
+        grid-template-columns: 1fr 1fr; 
+        gap: 20px; 
+        background: white; 
+        padding: 20px; 
+        border: 1px solid #ddd; 
+        margin-top: 20px; 
+        overflow-x: auto;
+    }
+    .coluna-balanco { display: flex; flex-direction: column; min-width: 500px; }
+    
+    .titulo-coluna { font-weight: bold; font-size: 1.2em; border-bottom: 3px solid #ccc; margin-bottom: 10px; text-transform: uppercase; padding-bottom: 5px; }
+    .ativo { border-color: #27ae60; color: #27ae60; }
+    .passivo { border-color: #c0392b; color: #c0392b; }
+    .pl { color: #2980b9; }
+
+    /* GRID para as linhas de contas (6 colunas) */
+    .grid-header, .linha-conta {
+        display: grid;
+        grid-template-columns: 3fr 1.5fr 0.8fr 1.5fr 0.8fr 0.8fr; /* Define largura das colunas */
+        gap: 5px;
+        align-items: center;
+        padding: 5px 0;
+        border-bottom: 1px solid #f5f5f5;
+        font-size: 0.85em;
+    }
+
+    .grid-header {
+        font-weight: bold;
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #ddd;
+        text-align: right;
+    }
+    .grid-header span:first-child { text-align: left; } /* Nome da conta à esquerda */
+
+    .linha-conta:hover { background-color: #fafafa; }
+    
+    /* Estilos de texto dentro da grid */
+    .nome-conta { font-weight: 500; color: #333; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .valor-col { text-align: right; font-weight: bold; }
+    .perc-col { text-align: right; font-size: 0.9em; color: #666; }
+    
+    /* Cores para AH Positiva/Negativa */
+    .ah-pos { color: #27ae60; }
+    .ah-neg { color: #c0392b; }
+
+    .grupo-titulo { background-color: #eee; padding: 5px; font-weight: bold; font-size: 0.85em; margin-top: 10px; text-transform: uppercase; grid-column: 1 / -1; }
+
+    .total-geral { display: flex; justify-content: space-between; padding: 10px; font-weight: bold; font-size: 1.1em; margin-top: auto; border-top: 2px solid #333; }
+    .ativo-bg { background-color: #eafaf1; color: #27ae60; }
+    .passivo-bg { background-color: #fdedec; color: #c0392b; }
+
+    @media print { .no-print { display: none; } .balanco-layout { display: grid; grid-template-columns: 1fr 1fr; } }
+</style>
+
+<script type="module" src="./js/pages/balanco.js"></script>

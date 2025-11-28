@@ -2,36 +2,45 @@
     <h2>Livro Diário</h2>
     <button id="btn-novo-lancamento" class="btn-submit">+ Novo Lançamento</button>
 </div>
-<p>Registre e gerencie as movimentações da empresa.</p>
+<p>Registre as movimentações contábeis. (Lançamentos são definitivos).</p>
 
 <div id="form-container-novo-lancamento" class="form-container" style="display: none;">
     <form id="form-novo-lancamento">
         <h3 id="form-title">Novo Lançamento</h3>
-        <input type="hidden" id="editing-partida-id" name="editing_partida_id">
         
         <div class="form-group">
-            <label for="data-lancamento">Data:</label>
-            <input type="date" id="data-lancamento" name="data" required>
+            <label for="data-lancamento">Data (Automática):</label>
+            <!-- <input type="date" id="data-lancamento" name="data" required readonly style="background-color: #e9ecef; cursor: not-allowed; opacity: 0.7;"> -->
+        <input type="date" id="data-lancamento" name="data" required>
         </div>
+
         <div class="form-group">
             <label for="conta-debito">Conta a Debitar:</label>
-            <select id="conta-debito" name="conta_debito" required></select>
+            <select id="conta-debito" name="conta_debito" required>
+                <option value="">Carregando...</option>
+            </select>
         </div>
+
         <div class="form-group">
             <label for="conta-credito">Conta a Creditar:</label>
-            <select id="conta-credito" name="conta_credito" required></select>
+            <select id="conta-credito" name="conta_credito" required>
+                <option value="">Carregando...</option>
+            </select>
         </div>
+
         <div class="form-group">
             <label for="historico">Histórico (Descrição):</label>
             <input type="text" id="historico" name="historico" required>
         </div>
+
         <div class="form-group">
             <label for="valor">Valor (R$):</label>
-            <input type="number" id="valor" name="valor" step="0.01" min="0.01" placeholder="Digite sem pontos. Ex: 100000" required>
+            <input type="text" id="valor" name="valor" placeholder="0,00" required>
         </div>
+
         <div class="form-actions">
-            <button type="submit" class="btn-submit">Salvar Lançamento</button>
-            <button type="button" id="btn-cancelar-novo-lancamento">Cancelar</button>
+            <button type="submit" class="btn-submit">Salvar (Definitivo)</button>
+            <button type="button" id="btn-cancelar">Cancelar</button>
         </div>
     </form>
 </div>
@@ -41,12 +50,14 @@
         <thead>
             <tr>
                 <th>Data</th>
-                <th>Conta</th>
                 <th>Histórico</th>
-                <th>Débito</th>
-                <th>Crédito</th>
+                <th>Conta Débito</th>
+                <th>Conta Crédito</th>
+                <th>Valor (R$)</th>
             </tr>
         </thead>
-        <tbody id="corpo-tabela-livro-diario"></tbody>
+        <tbody id="corpo-tabela-diario"></tbody>
     </table>
 </div>
+
+<script type="module" src="./js/pages/diario.js"></script>

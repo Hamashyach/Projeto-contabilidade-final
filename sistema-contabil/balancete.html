@@ -1,42 +1,40 @@
 <div class="header-container">
     <h2>Balancete de Verificação</h2>
+    <button id="btn-imprimir" class="btn-submit" style="background-color: #6c757d; display: none;">Imprimir / PDF</button>
 </div>
-<p>Selecione um período para gerar o relatório com saldo anterior, movimentação e saldo final.</p>
+<p>Resumo dos saldos de todas as contas (Ativo, Passivo e Resultado).</p>
 
-<div class="filtro-container form-container">
+<div class="filtro-container">
     <div class="form-group">
-        <label for="data-inicio">Data de Início:</label>
+        <label for="data-inicio">Data Início:</label>
         <input type="date" id="data-inicio">
     </div>
     <div class="form-group">
-        <label for="data-fim">Data de Fim:</label>
+        <label for="data-fim">Data Fim:</label>
         <input type="date" id="data-fim">
     </div>
     <div class="form-actions">
-        <button id="btn-gerar-balancete" class="btn-submit">Gerar Balancete</button>
+         <button id="btn-gerar-balancete" class="btn-submit">Gerar Balancete</button>
     </div>
 </div>
 
 <div class="table-container">
-    <table id="tabela-balancete">
+    <table id="tabela-balancete" class="tabela-relatorio">
         <thead>
             <tr>
-                <th rowspan="2">Código</th>
-                <th rowspan="2">Conta</th>
-                <th colspan="2">Saldo Inicial</th>
-                <th colspan="2">Movimento do Período</th>
-                <th colspan="2">Saldo Final</th>
-            </tr>
-            <tr>
-                <th>Débito</th>
-                <th>Crédito</th>
-                <th>Débito</th>
-                <th>Crédito</th>
-                <th>Débito</th>
-                <th>Crédito</th>
+                <th>Conta</th>
+                <th class="col-numero">Saldo Anterior</th>
+                <th class="col-numero">Débito</th>
+                <th class="col-numero">Crédito</th>
+                <th class="col-numero">Saldo Final</th>
             </tr>
         </thead>
-        <tbody id="corpo-tabela-balancete"></tbody>
-        <tfoot id="rodape-tabela-balancete"></tfoot>
+        <tbody id="corpo-tabela-balancete">
+            <tr><td colspan="5" style="text-align: center;">Selecione o período e clique em Gerar.</td></tr>
+        </tbody>
+        <tfoot id="rodape-tabela-balancete">
+            </tfoot>
     </table>
 </div>
+
+<script type="module" src="./js/pages/balancete.js"></script>

@@ -1,0 +1,100 @@
+<div class="header-container">
+    <h2>Demonstração do Resultado (DRE)</h2>
+    <div class="header-actions">
+        <button id="btn-imprimir-dre" class="btn-submit" style="background-color: #6c757d; display: none;">🖨️ Imprimir</button>
+    </div>
+</div>
+<p>Apuração do resultado do exercício (Regime de Competência).</p>
+
+<div class="filtro-container no-print">
+    <div class="form-group">
+        <label for="dre-data-inicio">Data Início:</label>
+        <input type="date" id="dre-data-inicio">
+    </div>
+    <div class="form-group">
+        <label for="dre-data-fim">Data Fim:</label>
+        <input type="date" id="dre-data-fim">
+    </div>
+    <div class="form-actions">
+         <button id="btn-gerar-dre" class="btn-submit">Gerar DRE</button>
+    </div>
+</div>
+
+<div id="relatorio-dre" class="table-container" style="display: none;">
+    <table id="tabela-dre" class="tabela-sistema">
+        <thead>
+            <tr>
+                <th style="width: 100px;">Código</th>
+                <th>Descrição da Conta / Grupo</th>
+                <th style="width: 150px; text-align: right;">Valor (R$)</th>
+                <th style="width: 80px; text-align: right;">AV%</th>
+            </tr>
+        </thead>
+        <tbody id="dre-corpo">
+            </tbody>
+    </table>
+</div>
+
+<style>
+    /* Reaproveitando variáveis do seu CSS global */
+    .tabela-sistema {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: #fff; /* Fundo branco */
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        border: 1px solid #dce1e6;
+    }
+
+    .tabela-sistema th {
+        background-color: #eef1f4; /* Cinza claro igual ao print */
+        color: #34495e;
+        font-weight: 600;
+        padding: 12px 10px;
+        border: 1px solid #dce1e6;
+        text-align: left;
+    }
+
+    .tabela-sistema td {
+        padding: 10px;
+        border: 1px solid #dce1e6; /* Linhas de grade visíveis */
+        color: #34495e;
+        font-size: 0.95em;
+    }
+
+    /* Colunas de Valor */
+    .col-valor, .col-av {
+        text-align: right;
+        font-family: 'Roboto Mono', monospace; /* Fonte numérica */
+        font-weight: 500;
+    }
+
+    /* Cores de Texto */
+    .val-pos { color: #16a085; } /* Verde Suave */
+    .val-neg { color: #c0392b; } /* Vermelho Suave */
+    .val-neutral { color: #34495e; }
+
+    /* Estilos de Linha (Hierarquia) */
+    .row-total {
+        background-color: #f8f9fa;
+        font-weight: 700;
+    }
+    
+    .row-result {
+        background-color: #eafaf1; /* Fundo levemente verde para resultado */
+        font-weight: 800;
+        font-size: 1.1em;
+        border-top: 2px solid #1abc9c;
+    }
+    .row-result.prejuizo {
+        background-color: #fdedec;
+        border-top: 2px solid #e74c3c;
+    }
+
+    /* Indentação para sub-itens */
+    .indent-1 { padding-left: 25px !important; color: #555; }
+
+</style>
+
+<script type="module" src="./js/pages/dre.js"></script>

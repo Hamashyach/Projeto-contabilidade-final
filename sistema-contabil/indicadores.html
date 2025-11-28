@@ -1,0 +1,130 @@
+<div class="header-container">
+    <h2>Indicadores Financeiros</h2>
+    <div class="header-actions">
+        <button id="btn-imprimir-ind" class="btn-submit" style="background-color: #6c757d; display: none;">🖨️ Imprimir</button>
+    </div>
+</div>
+
+<div class="filtro-container no-print">
+    <div class="form-group">
+        <label for="ind-data-referencia">Data de Referência (Atual):</label>
+        <input type="date" id="ind-data-referencia">
+    </div>
+    <div class="form-group">
+        <label for="ind-data-anterior">Data Base (Anterior):</label>
+        <input type="date" id="ind-data-anterior">
+    </div>
+    <div class="form-actions">
+         <button id="btn-gerar-ind" class="btn-submit">Gerar Indicadores</button>
+    </div>
+</div>
+
+<div id="relatorio-ind" style="display: none; margin-top: 20px;">
+    <div class="indicadores-grid">
+        
+        <div class="tabela-wrapper">
+            <h3 class="titulo-tabela">Índice de Liquidez</h3>
+            <table class="tabela-sistema">
+                <thead>
+                    <tr>
+                        <th>Indicador</th>
+                        <th style="text-align: right;">Índice</th>
+                    </tr>
+                </thead>
+                <tbody id="ind-corpo-liquidez"></tbody>
+            </table>
+        </div>
+
+        <div class="tabela-wrapper">
+            <h3 class="titulo-tabela">Índice de Retorno</h3>
+            <table class="tabela-sistema">
+                <thead>
+                    <tr>
+                        <th>Indicador</th>
+                        <th style="text-align: right;">Porcentagem</th>
+                    </tr>
+                </thead>
+                <tbody id="ind-corpo-retorno"></tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+<style>
+    /* Grid Lado a Lado */
+    .indicadores-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* Duas colunas iguais */
+        gap: 30px;
+        align-items: start;
+    }
+
+    .tabela-wrapper {
+        background: #fff;
+        border: 1px solid #dce1e6;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    }
+
+    .titulo-tabela {
+        margin-top: 0;
+        margin-bottom: 15px;
+        color: #2c3e50;
+        border-bottom: 2px solid #3498db;
+        padding-bottom: 10px;
+        font-size: 1.1em;
+        text-transform: uppercase;
+    }
+
+    .tabela-sistema {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .tabela-sistema th {
+        background-color: #f8f9fa;
+        color: #7f8c8d;
+        font-weight: 600;
+        padding: 10px;
+        text-align: left;
+        border-bottom: 2px solid #eee;
+        font-size: 0.9em;
+    }
+
+    .tabela-sistema td {
+        padding: 12px 10px;
+        border-bottom: 1px solid #eee;
+        color: #34495e;
+        font-weight: 500;
+    }
+
+    .tabela-sistema tr:last-child td { border-bottom: none; }
+
+    /* Valores */
+    .valor-ind {
+        font-family: 'Roboto Mono', monospace;
+        text-align: right;
+        font-weight: 700;
+        color: #2c3e50;
+        font-size: 1.1em;
+    }
+
+    /* Fórmula pequena embaixo do nome */
+    .formula-mini {
+        display: block;
+        font-size: 0.75em;
+        color: #95a5a6;
+        margin-top: 3px;
+        font-weight: normal;
+    }
+
+    @media print {
+        .no-print { display: none; }
+        .indicadores-grid { grid-template-columns: 1fr 1fr; }
+        .tabela-wrapper { border: 1px solid #000; box-shadow: none; }
+    }
+</style>
+
+<script type="module" src="./js/pages/indicadores.js"></script>
